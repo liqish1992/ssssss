@@ -1,40 +1,94 @@
 package com.liqisheng.demo;
 
-import com.liqisheng.demo.pojo.Person;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
-import org.junit.platform.commons.util.StringUtils;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.yaml.snakeyaml.Yaml;
 
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.io.IOException;
+import java.util.Map;
 
 @SpringBootTest
 @Slf4j
 class DemoApplicationTests {
 
+    private static int counter = 0;
+
     @Test
-    void contextLoads() {
+    void contextLoads() throws IOException {
 
-        List<Person> personList = new ArrayList<Person>();
-        personList.add(new Person("Tom", 8900, 23, "male", "New York"));
-        personList.add(new Person("Jack", 7000, 25, "male", "Washington"));
-        personList.add(new Person("Lily", 7800, 21, "female", "Washington"));
-        personList.add(new Person("Anni", 8200, 24, "female", "New York"));
-        personList.add(new Person("Owen", 9500, 25, "male", "New York"));
-        personList.add(new Person("Alisa", 7900, 26, "female", "New York"));
-        List<String> list = Arrays.asList("adnm", "admmt", "pot", "xbangd", "weoujgsd");
+        String jsonString = "apiVersion: apps/v1\n" +
+                "kind: Deployment\n" +
+                "metadata: \n" +
+                "  name: pc-deployment \n" +
+                "  namespace: dev \n" +
+                "spec: \n" +
+                "  replicas: 3 \n" +
+                "  strategy: \n" +
+                "    type: RollingUpdate # RollingUpdate：\n" +
+                "    rollingUpdate:\n" +
+                "      maxUnavailable: 25%\n" +
+                "      maxSurge: 25%\n" +
+                "  selector: \n" +
+                "    matchLabels: \n" +
+                "      app: nginx-pod\n" +
+                "  template: \n" +
+                "    metadata:\n" +
+                "      labels:\n" +
+                "        app: nginx-pod\n" +
+                "    spec:\n" +
+                "      containers:\n" +
+                "        - name: nginx \n" +
+                "          image: nginx:1.17.1 \n" +
+                "          ports:\n" +
+                "            - containerPort: 80 \n" +
+                "apiVersion: apps/v1\n" +
+                "kind: Deployment\n" +
+                "metadata:\n" +
+                "  name: pc-deployment\n" +
+                "  namespace: dev\n" +
+                "spec:\n" +
+                "  replicas: 3\n" +
+                "  strategy:\n" +
+                "    type: RollingUpdate # RollingUpdate：\n" +
+                "    rollingUpdate:\n" +
+                "      maxUnavailable: 25%\n" +
+                "      maxSurge: 25%\n" +
+                "  selector:\n" +
+                "    matchLabels:\n" +
+                "      app: nginx-pod\n" +
+                "  template:\n" +
+                "    metadata:\n" +
+                "      labels:\n" +
+                "        app: nginx-pod\n" +
+                "    spec:\n" +
+                "      containers:\n" +
+                "        - name: nginx\n" +
+                "          image: nginx:1.17.1\n" +
+                "          ports:\n" +
+                "            - containerPort: 80 ";
 
-        Optional<String> max = list.stream().max(Comparator.comparing(String::length));
-        System.out.println("最长的字符串：" + max.get());
+        Yaml yaml = new Yaml();
+        Map load = yaml.load(jsonString);
+        String dump = yaml.dump(load);
 
-        String[] s = {"sdf", "asdf", "accca", "bb"};
-        Arrays.stream(s).distinct().forEach(System.out::println);
-        System.out.println(".....................");
-        Arrays.stream(s).sorted().forEach(System.out::println);
-        System.out.println(".....................");
-        Arrays.stream(s).sorted(Comparator.comparing(String::length)).forEach(System.out::println);
+        System.out.println(countStr(dump, "apiVersion"));
+        System.out.println(countStr(jsonString, "apiVersion"));
 
     }
+
+
+    public static int countStr( String str1, String key) {
+         int count = 0;
+         int account = 0;
+        while ((count = str1.indexOf(key)) != -1) {
+            account++;
+            str1 = str1.substring(count);
+        }
+        return account;
+    }
+
+
 }
+
+
